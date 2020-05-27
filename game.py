@@ -43,8 +43,25 @@ def runGame():
                 pygame.quit()
                 sys.exit()
 
+            if event.type in [pygame.KEYDOWN]:  # 전투기 움직이기
+                if event.key == pygame.K_LEFT:
+                    fighterX -= 5
+
+                elif event.key == pygame.K_RIGHT:
+                    fighterX += 5
+
+            if event.type in [pygame.KEYUP]:  # 왼쪽,오른쪽 키보드를 떘을때
+                if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                    fighterX = 0
+
         # gamePad.fill(BLACK)
         drawObject(background, 0, 0)
+
+        x += fighterX  # 키보드로부터 변경된 비행기 좌표 반영
+        if x < 0:
+            x = 0
+        elif x > padWidth - fighterWidth:  # 게임 화면에서 비행기가 오른쪽으로 끝까지 갔을 경우
+            x = padWidth - fighterWidth
 
         drawObject(fighter, x, y)  # 전투기 표시
 
