@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 from time import sleep
 
 # BLACK = (0, 0, 0)
@@ -8,6 +9,20 @@ padHeight = 640
 # 이미지를 그냥 ./resource/background.png로 해도 되었는데 또 이상하게 안되서
 # 그냥 전체리소스 경로를 지정해 놓음
 resourcePath = '/home/donghyuk/바탕화면/Python/PyShooting/resource/'
+rockImage = [resourcePath+'rock01.png', resourcePath+'rock02.png', resourcePath+'rock03.png', resourcePath+'rock04.png',
+             resourcePath+'rock05.png', resourcePath+'rock06.png', resourcePath +
+             'rock07.png', resourcePath+'rock08.png',
+             resourcePath+'rock09.png', resourcePath+'rock10.png', resourcePath +
+             'rock11.png', resourcePath+'rock12.png',
+             resourcePath+'rock13.png', resourcePath+'rock14.png', resourcePath +
+             'rock15.png', resourcePath+'rock16.png',
+             resourcePath+'rock17.png', resourcePath+'rock18.png', resourcePath +
+             'rock19.png', resourcePath+'rock20.png',
+             resourcePath+'rock21.png', resourcePath+'rock22.png', resourcePath +
+             'rock23.png', resourcePath+'rock24.png',
+             resourcePath+'rock25.png', resourcePath+'rock26.png', resourcePath +
+             'rock27.png', resourcePath+'rock28.png',
+             resourcePath+'rock29.png', resourcePath+'rock30.png', ]
 
 
 def drawObject(obj, x, y):  # 배경화면 그리는 drawObject 함수
@@ -38,6 +53,15 @@ def runGame():
     fighterX = 0
 
     missileXY = []
+
+    rock = pygame.image.load(random.choice(rockImage))
+    rockSize = rock.get_rect().size
+    rockWidth = rockSize[0]
+    rockHeight = rockSize[1]
+
+    rockX = random.randrange(0, padWidth - rockWidth)
+    rockY = 0
+    rockSpeed = 2
 
     onGame = False
     while not onGame:
@@ -88,6 +112,19 @@ def runGame():
         if len(missileXY) != 0:  # 미사일 실제 그리기
             for bx, by in missileXY:
                 drawObject(missile, bx, by)
+
+        rockY += rockSpeed  # 운석이 아래로 움직임
+        # 운석이 지구로 떨어진 경우
+        if rockY > padHeight:
+            # 새로운 운석을 만들어 준다
+            rock = pygame.image.load(random.choice(rockImage))
+            rockSize = rock.get_rect().size
+            rockWidth = rockSize[0]
+            rockHeight = rockSize[1]
+            rockX = random.randrange(0, padWidth - rockWidth)
+            rockY = 0
+
+        drawObject(rock, rockX, rockY)  # 운석 그리기
 
         pygame.display.update()
 
