@@ -24,6 +24,22 @@ rockImage = [resourcePath+'rock01.png', resourcePath+'rock02.png', resourcePath+
              'rock27.png', resourcePath+'rock28.png',
              resourcePath+'rock29.png', resourcePath+'rock30.png', ]
 
+# 운석을 맞춘 개수 계산
+
+
+def writeScore(count):
+    global gamePad
+    font = pygame.font.Font(resourcePath+'NanumGothic.ttf', 20)
+    text = font.render('파괴한 운석 수:' + str(count), True, (255, 255, 255))
+    gamePad.blit(text, (10, 0))
+
+
+def writePassed(count):
+    global gamePad
+    font = pygame.font.Font(resourcePath+'NanumGothic.ttf', 20)
+    text = font.render('놓친 운석:' + str(count), True, (255, 0, 0))
+    gamePad.blit(text, (360, 0))
+
 
 def drawObject(obj, x, y):  # 배경화면 그리는 drawObject 함수
     global gamePad
@@ -126,6 +142,9 @@ def runGame():
             for bx, by in missileXY:
                 drawObject(missile, bx, by)
 
+        # 운석 맞춘 점수 표시
+        writeScore(shotCount)
+
         rockY += rockSpeed  # 운석이 아래로 움직임
         # 운석이 지구로 떨어진 경우
         if rockY > padHeight:
@@ -136,6 +155,9 @@ def runGame():
             rockHeight = rockSize[1]
             rockX = random.randrange(0, padWidth - rockWidth)
             rockY = 0
+            rockPassed += 1
+        # 놓친 운석 수 표시
+        writePassed(rockPassed)
 
         # 운석을 맞춘 경우
         if isShot:
