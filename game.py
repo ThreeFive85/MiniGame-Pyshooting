@@ -173,6 +173,11 @@ def runGame():
             rockY = 0
             isShot = False
 
+            # 운석을 맞추면 속도 증가
+            rockSpeed += 0.2
+            if rockSpeed >= 10:
+                rockSpeed = 10
+
         drawObject(rock, rockX, rockY)  # 운석 그리기
 
         pygame.display.update()
