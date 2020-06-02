@@ -40,6 +40,34 @@ def writePassed(count):
     text = font.render('놓친 운석:' + str(count), True, (255, 0, 0))
     gamePad.blit(text, (360, 0))
 
+# 게임 메서지 출력
+
+
+def writeMessage(text):
+    global gamePad
+    textfont = pygame.font.Font(resourcePath+'NanumGothic.ttf', 60)
+    text = textfont.render(text, True, (255, 0, 0))
+    textpos = text.get_rect()
+    textpos.center = (padWidth/2, padHeight/2)
+    gamePad.blit(text, textpos)
+    pygame.display.update()
+    sleep(5)  # 5초 쉬고 다시 시작
+    runGame()
+
+# 전투기가 운석과 충돌했을 때 메세지 출력
+
+
+def crash():
+    global gamePad
+    writeMessage('전투기 파괴!!!')
+
+# 게임 오버 메시지 보이기
+
+
+def gameOver():
+    global gamePad
+    writeMessage('게임 오버!!!')
+
 
 def drawObject(obj, x, y):  # 배경화면 그리는 drawObject 함수
     global gamePad
@@ -117,6 +145,12 @@ def runGame():
         elif x > padWidth - fighterWidth:  # 게임 화면에서 비행기가 오른쪽으로 끝까지 갔을 경우
             x = padWidth - fighterWidth
 
+        # 전투기가 운석과 충돌했는지 체크
+        if y < rockY + rockHeight:
+            if(rockX > x and rockX < x + fighterWidth) or \
+                    (rockX + rockWidth > x and rockX + rockWidth < x + fighterWidth):
+                crash()
+
         drawObject(fighter, x, y)  # 전투기 표시
 
         if len(missileXY) != 0:
@@ -156,6 +190,11 @@ def runGame():
             rockX = random.randrange(0, padWidth - rockWidth)
             rockY = 0
             rockPassed += 1
+
+        # 운석 3개를 놓치면 게임 오버
+        if rockPassed == 3:
+            gameOver()
+
         # 놓친 운석 수 표시
         writePassed(rockPassed)
 
