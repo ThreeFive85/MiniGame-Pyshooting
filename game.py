@@ -23,6 +23,8 @@ rockImage = [resourcePath+'rock01.png', resourcePath+'rock02.png', resourcePath+
              resourcePath+'rock25.png', resourcePath+'rock26.png', resourcePath +
              'rock27.png', resourcePath+'rock28.png',
              resourcePath+'rock29.png', resourcePath+'rock30.png', ]
+explosionSound = [resourcePath+'explosion01.wav', resourcePath+'explosion02.wav', resourcePath+'explosion03.wav',
+                  resourcePath+'explosion04.wav']
 
 # 운석을 맞춘 개수 계산
 
@@ -44,14 +46,17 @@ def writePassed(count):
 
 
 def writeMessage(text):
-    global gamePad
+    global gamePad, gameOverSound
     textfont = pygame.font.Font(resourcePath+'NanumGothic.ttf', 60)
     text = textfont.render(text, True, (255, 0, 0))
     textpos = text.get_rect()
     textpos.center = (padWidth/2, padHeight/2)
     gamePad.blit(text, textpos)
     pygame.display.update()
+    pygame.mixer.music.stop()  # 배경 음악 정지
+    gameOverSound.play()  # 게임 오버 사운드 재생
     sleep(5)  # 5초 쉬고 다시 시작
+    pygame.mixer.music.play(-1)  # 배경 음악 재생
     runGame()
 
 # 전투기가 운석과 충돌했을 때 메세지 출력
@@ -75,7 +80,7 @@ def drawObject(obj, x, y):  # 배경화면 그리는 drawObject 함수
 
 
 def initGame():
-    global gamePad, clock, background, fighter, missile, explosion
+    global gamePad, clock, background, fighter, missile, explosion, missileSound, gameOverSound
     pygame.init()
     gamePad = pygame.display.set_mode((padWidth, padHeight))
     pygame.display.set_caption('PyShooting')
@@ -83,11 +88,15 @@ def initGame():
     fighter = pygame.image.load(resourcePath+'fighter.png')
     missile = pygame.image.load(resourcePath+'missile.png')
     explosion = pygame.image.load(resourcePath+'explosion.png')
+    pygame.mixer.music.load(resourcePath+'music.wav')  # 배경음악
+    pygame.mixer.music.play(-1)  # 배경음악 재생
+    missileSound = pygame.mixer.Sound(resourcePath+'missile.wav')  # 미사일소리
+    gameOverSound = pygame.mixer.Sound(resourcePath+'gameover.wav')  # 게임오버 사운드
     clock = pygame.time.Clock()
 
 
 def runGame():
-    global gamePad, clock, background, fighter, missile, explosion
+    global gamePad, clock, background, fighter, missile, explosion, missileSound
 
     fighterSize = fighter.get_rect().size  # 전투기 사이즈
     fighterWidth = fighterSize[0]
@@ -103,6 +112,8 @@ def runGame():
     rockSize = rock.get_rect().size
     rockWidth = rockSize[0]
     rockHeight = rockSize[1]
+    destroySound = pygame.mixer.Sound(
+        random.choice(explosionSound))  # 랜덤하게 폭발 사운드
 
     rockX = random.randrange(0, padWidth - rockWidth)
     rockY = 0
@@ -128,6 +139,7 @@ def runGame():
                     fighterX += 5
 
                 elif event.key == pygame.K_SPACE:  # 스페이스바를 누르면 미사일 발사
+                    missileSound.play()  # 스페이스를 누르면 미사일사운드 플레이
                     missileX = x + fighterWidth/2
                     missileY = y - fighterHeight
                     missileXY.append([missileX, missileY])
@@ -202,6 +214,7 @@ def runGame():
         if isShot:
             # 운석 폭발
             drawObject(explosion, rockX, rockY)  # 운석 폭발 그림
+            destroySound.play()  # 운석 폭발 사운드 재생
 
             # 새로운 운석(랜덤)
             rock = pygame.image.load(random.choice(rockImage))
@@ -210,6 +223,7 @@ def runGame():
             rockHeight = rockSize[1]
             rockX = random.randrange(0, padWidth - rockWidth)
             rockY = 0
+            destroySound = pygame.mixer.Sound(random.choice(explosionSound))
             isShot = False
 
             # 운석을 맞추면 속도 증가
